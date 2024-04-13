@@ -94,37 +94,40 @@ local function get_num_active_routes()
     return count
 end
 
+local term1, term2, term3, term5 = v3(), v3(), v3(), v3()
 local function quadraticBezierCurve(p0, p1, p2, t)
     local a = (1 - t) ^ 2
     local b = 2 * (1 - t) * t
     local c = t ^ 2
 
-    local term1 = v3(p0):mul(a)
-    local term2 = v3(p1):mul(b)
-    local term3 = v3(p2):mul(c)
+	term1:set(p0);term1:mul(a)
+	term2:set(p1);term2:mul(b)
+	term3:set(p2);term3:mul(c)
 
     local result = term1:add(term2):add(term3)
 
     local u = 1 - t
     local term4 = v3(p1):sub(p0):mul(2 * u)
-    local term5 = v3(p2):sub(p1):mul(2 * t)
+	term5:set(p2);term5:sub(p1):mul(2 * t)
     term4:add(term5)
 
     return result, term4
 end
 
+local _dir, _draw_pos, v3_90_0_0 = v3(), v3(), v3(90, 0, 0)
 local function draw_arrows_between_points(point_a, point_b, route_slot)
     local dist = v3.distance(point_a, point_b)
     local count = math.floor(dist / config.marker_spacing)
-    local dir = v3(point_b):sub(point_a):normalise()
+	_dir:set(point_b);_dir:sub(point_a):normalise()
     local player_pos = GET_ENTITY_COORDS(user_ped)
     local color = config.slot_colors[route_slot]
 
+	
     for i = 0, count do
-        local draw_pos = v3(dir):mul(i * config.marker_spacing):add(point_a)
-        local dist = v3.distance(draw_pos, player_pos)
-        draw_pos.z = draw_pos.z - (config.lowering_strength / dist) - config.line_z_offset
-        DRAW_MARKER(config.marker, draw_pos, dir, v3(90, 0, 0), v3.one, color.r, color.g, color.b, color.a, false, false, 0, false, 0, 0, false)
+        _draw_pos:set(_dir);_draw_pos:mul(i * config.marker_spacing):add(point_a)
+        local dist = v3.distance(_draw_pos, player_pos)
+        _draw_pos.z = _draw_pos.z - (config.lowering_strength / dist) - config.line_z_offset
+        DRAW_MARKER(config.marker, _draw_pos, _dir, v3_90_0_0, v3.one, color.r, color.g, color.b, color.a, false, false, 0, false, 0, 0, false)
     end
 end
 
@@ -139,7 +142,7 @@ local function draw_arrows_between_points_smooth(point_a, point_b, point_c, rout
         local draw_pos, dir = quadraticBezierCurve(point_a, point_b, point_c, t)
 
         draw_pos.z = draw_pos.z - (config.lowering_strength / v3.distance(draw_pos, player_pos)) - config.line_z_offset
-        DRAW_MARKER(config.marker, draw_pos, dir, v3(90, 0, 0), v3.one, color.r, color.g, color.b, color.a, false, false, 0, false, 0, 0, false)
+        DRAW_MARKER(config.marker, draw_pos, dir, v3_90_0_0, v3.one, color.r, color.g, color.b, color.a, false, false, 0, false, 0, 0, false)
     end
 end
 
