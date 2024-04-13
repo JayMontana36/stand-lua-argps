@@ -125,8 +125,8 @@ local function draw_arrows_between_points(point_a, point_b, route_slot)
 	
     for i = 0, count do
         _draw_pos:set(_dir);_draw_pos:mul(i * config.marker_spacing):add(point_a)
-        local dist = v3.distance(_draw_pos, player_pos)
-        _draw_pos.z = _draw_pos.z - (config.lowering_strength / dist) - config.line_z_offset
+        local dist2 = v3.distance(_draw_pos, player_pos)
+        _draw_pos.z = _draw_pos.z - (config.lowering_strength / dist2) - config.line_z_offset
         DRAW_MARKER(config.marker, _draw_pos, _dir, v3_90_0_0, v3.one, color.r, color.g, color.b, color.a, false, false, 0, false, 0, 0, false)
     end
 end
